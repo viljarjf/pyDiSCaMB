@@ -125,7 +125,7 @@ def lysozyme() -> structure:
     from libtbx.utils import null_out
     import requests
 
-    data = requests.get("https://files.rcsb.org/view/1JKB.pdb")
+    data = requests.get("https://files.rcsb.org/view/7ULY.pdb")
     pdb_str = data.content.decode("utf-8")
 
     pdb_inp = iotbx.pdb.input(lines=pdb_str.split("\n"), source_info=None)

@@ -1,7 +1,20 @@
 from pathlib import Path
 from typing import List
 
-ROOT = Path(__file__).parent / "data"
+
+def get_TAAM_root() -> Path:
+    # Check if editable
+    project_root = Path(__file__).parent.parent
+    # Assume the existance of a couple files in the project
+    # means that we are in editable
+    if (
+        (project_root / "CMakeLists.txt").exists()
+        and (project_root / "pyproject.toml").exists()
+        and (project_root / "README.md").exists()
+        and (project_root / ".gitignore").exists()
+    ):
+        return project_root / "data"
+    return Path(__file__).parent / "data"
 
 
 def get_TAAM_databanks() -> List[str]:
@@ -12,12 +25,8 @@ def get_TAAM_databanks() -> List[str]:
     # are copied into the installation directory of the module,
     # without preserving other folder structure.
     # Assume no filenames are duplicate.
-    files = ROOT.glob("*databank.txt")
+    files = get_TAAM_root().glob("**/*databank.txt")
     return [str(file) for file in files]
-
-
-def get_TAAM_root() -> str:
-    return str(ROOT)
 
 
 def is_MATTS_installed() -> bool:

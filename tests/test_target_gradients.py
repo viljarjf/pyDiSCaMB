@@ -178,12 +178,7 @@ class TestTargetGradients:
         import random
 
         random.seed(0)
-        selection = flex.bool(
-            [random.randint(0, 1) for _ in range(xrs.scatterers().size())]
-        )
-        iselection = selection.iselection()
 
-        xrs.convert_to_anisotropic(selection)
         f_obs = abs(xrs.structure_factors(d_min=2).f_calc())
 
         xrs.shake_sites_in_place(rms_difference=0.1)
@@ -191,9 +186,20 @@ class TestTargetGradients:
         xrs.shake_occupancies()
 
         xrs.scatterers().flags_set_grads(state=False)
-        xrs.scatterers().flags_set_grad_u_aniso(iselection)
-        iselection = flex.bool([not i for i in list(selection)]).iselection()
+        iselection = flex.bool(
+            [
+                random.randint(0, 1) if s.flags.use_u_iso() else 0
+                for s in xrs.scatterers()
+            ]
+        ).iselection()
         xrs.scatterers().flags_set_grad_u_iso(iselection)
+        iselection = flex.bool(
+            [
+                random.randint(0, 1) if s.flags.use_u_aniso() else 0
+                for s in xrs.scatterers()
+            ]
+        ).iselection()
+        xrs.scatterers().flags_set_grad_u_aniso(iselection)
         iselection = flex.bool(
             [random.randint(0, 1) for _ in range(xrs.scatterers().size())]
         ).iselection()

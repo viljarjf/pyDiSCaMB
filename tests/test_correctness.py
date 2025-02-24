@@ -66,36 +66,25 @@ def get_IAM_correctness_score(
     return score
 
 
+@pytest.mark.veryslow
 @pytest.mark.slow
-@pytest.mark.parametrize(
-    "scattering_table",
-    ["it1992", "wk1995", "electron"],
-)
 @pytest.mark.parametrize("space_group", range(1, 231))
-@pytest.mark.parametrize("with_adps", ["random u_iso", "random u_aniso", None])
-@pytest.mark.parametrize("with_occupancy", ["random occupancy", None])
-@pytest.mark.parametrize(
-    "with_anomalous",
-    ["no anomalous", "fprime", "fdoubleprime", "fprime + fdoubleprime"],
-)
-@pytest.mark.parametrize(
-    "atoms",
-    ["single weak", "single strong", "many weak", "many strong", "mixed strength"],
-)
 def test_IAM_correctness_random_crystal(
     space_group: int,
-    with_adps: bool,
-    with_occupancy: bool,
-    with_anomalous: str,
-    atoms: str,
-    scattering_table: str,
 ):
-    xrs = get_random_crystal(
-        space_group, with_adps, with_occupancy, with_anomalous, atoms, scattering_table
-    )
-    score = get_IAM_correctness_score(xrs)
-    # Use 0.05% as threshold
-    assert score < 0.0005
+    from itertools import product
+
+    for args in product(
+        ["random u_iso", "random u_aniso", None],
+        ["random occupancy", None],
+        ["no anomalous", "fprime", "fdoubleprime", "fprime + fdoubleprime"],
+        ["single weak", "single strong", "many weak", "many strong", "mixed strength"],
+        ["it1992", "wk1995", "electron"],
+    ):
+        xrs = get_random_crystal(space_group, *args)
+        score = get_IAM_correctness_score(xrs)
+        # Use 0.05% as threshold
+        assert score < 0.0005
 
 
 @pytest.mark.slow
