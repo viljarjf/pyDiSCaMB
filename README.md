@@ -1,6 +1,6 @@
 # pyDiSCaMB
 
-![Tests](https://github.com/viljarjf/pyDiSCaMB/actions/workflows/test.yaml/badge.svg?branch=main)
+![Tests](https://github.com/viljarjf/pyDiSCaMB/actions/workflows/test.yaml/badge.svg?event=push&branch=main)
 
 Simple pybind11 wrapper to communicate with DiSCaMB from cctbx, built with scikit-build and cmake.
 
@@ -38,7 +38,7 @@ Only tested on versions newer than around 2.0rc1-5500.
 ```python
 from pydiscamb import DiscambWrapper
 
-wrapper = DiscambWrapper.from_cif("your_structure.cif")
+wrapper = DiscambWrapper.from_file("your_structure.cif")
 wrapper.set_d_min(2.0)
 f_calc = wrapper.f_calc()
 

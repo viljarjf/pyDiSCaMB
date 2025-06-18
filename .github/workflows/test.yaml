@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - 'main'
+    # Only run tests on changes to actual code
+    paths:
+      - 'pydiscamb/**'
+      - 'tests/**'
+      - 'src/**'
+      - 'include/**'
+      - 'lib/**'
   pull_request:
     branches:
       - 'main'
@@ -44,7 +51,12 @@ jobs:
         run: conda env update --file ${{ format('conda/compiler_{0}.yml', matrix.os) }}
       - name: Install pyDiSCaMB
         run: pip install .
+      - name: Install test tools
+        run: pip install pytest pytest-cov
       - name: Test with pytest
-        run: |
-          pip install pytest
-          pytest -m "not veryslow" .
+        run: pytest --cov=pydiscamb -m "not veryslow" .
+      - name: Write coverage report
+        if: |
+          ${{ matrix.os == 'ubuntu-latest' }} && 
+          ${{ matrix.python-version == '3.12' }}
+        run: coverage report --show-missing
