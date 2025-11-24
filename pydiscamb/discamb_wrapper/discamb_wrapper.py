@@ -17,10 +17,6 @@ if TYPE_CHECKING:
 def _concat_scatterer_labels(xrs: "structure") -> str:
     return "".join(s.label for s in xrs.scatterers())
 
-def print_and_save(message, log):
-    print(message)
-    print(message, file=log)
-
 class DiscambWrapper(PythonInterface, FactoryMethodsMixin):
 
     atom_type_assignment: "dict[str, tuple[str, str]]"
@@ -83,17 +79,7 @@ class DiscambWrapper(PythonInterface, FactoryMethodsMixin):
                 # As of May 2025, this error is consistently thrown in the windows testrunners of cctbx
                 pass
 
-    def show_atom_type_assignment(self, log=sys.stdout, print=True):
-        """
-        Print and/or save a summary of atom type assignment.
-        
-        Remember to open log before writing to it and close it afterwards if it's not stdout.
-
-        Args:
-            log (file object, optional): File object where the summary is written. Defaults to sys.stdout.
-            print (bool, optional): A flag used to print the summary to stdout, even if log is different. Defaults to True.
-        """
-        dual = log != sys.stdout and print == True
+    def show_atom_type_assignment(self, log=sys.stdout):
         ata = self.atom_type_assignment
 
         multipolar = {
@@ -130,34 +116,15 @@ class DiscambWrapper(PythonInterface, FactoryMethodsMixin):
 
         if n_spherical_multipolar > 0:
             print(
-                "IAM (Gaussian):",
-                n_spherical_iam,
-                file=log,
+                "\nThe following atoms have spherical multipolar parameters:", file=log
             )
-
-        if n_spherical_multipolar > 0:
-            if dual:
-                print_and_save(
-                    "\nThe following atoms have spherical multipolar parameters:", log
-                )
-                for k in spherical_multipolar.keys():
-                    print_and_save(k.split('"')[1], log)
-            else:
-                print(
-                    "\nThe following atoms have spherical multipolar parameters:", file=log
-                )
-                for k in spherical_multipolar.keys():
-                    print(k.split('"')[1], file=log)
+            for k in spherical_multipolar.keys():
+                print(k.split('"')[1], file=log)
 
         if n_spherical_iam > 0:
-            if dual:
-                print_and_save("\nThe following atoms use regulard IAM:", log)
-                for k in spherical_iam.keys():
-                    print_and_save(k.split('"')[1], log)
-            else:
-                print("\nThe following atoms use regulard IAM:", file=log)
-                for k in spherical_iam.keys():
-                    print(k.split('"')[1], file=log)
+            print("\nThe following atoms use regulard IAM:", file=log)
+            for k in spherical_iam.keys():
+                print(k.split('"')[1], file=log)
 
     def update_structure(self, xrs: "structure"):
         if self._atomstr != _concat_scatterer_labels(
