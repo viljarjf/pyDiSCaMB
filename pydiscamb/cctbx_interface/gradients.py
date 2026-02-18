@@ -3,7 +3,7 @@ from cctbx.xray.structure_factors.gradients_base import gradients_base
 from cctbx.xray.structure_factors.gradients_direct import gradients_direct
 
 from pydiscamb.cctbx_interface.phil_scope import scope_to_taam_dict
-from pydiscamb.discamb_wrapper import DiscambWrapperCached, FCalcMethod
+from pydiscamb.discamb_wrapper import DiscambWrapper, FCalcMethod
 
 
 class gradients_taam(gradients_direct):
@@ -47,7 +47,7 @@ class CctbxGradientsResult:
     def __init__(
         self, xrs, miller_set, d_target_d_f_calc, n_parameters, method, **kwargs
     ):
-        w = DiscambWrapperCached(xrs, method, **kwargs)
+        w = DiscambWrapper(xrs, method, **kwargs)
         w.set_indices(miller_set.indices())
 
         self._d_target_d_site_frac = flex.vec3_double(
